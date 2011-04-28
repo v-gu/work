@@ -1,0 +1,82 @@
+for format39shop in `ls -1 /data2/gamelogs2/fw/39/*world.formatlog`; do echo "./scan_fw_achieve_formatlog.pl $format39shop 39"; ./scan_fw_achieve_formatlog.pl $format39shop 39; done
+for format42shop in `ls -1 /data2/gamelogs2/fw/42/*world.formatlog`; do echo "./scan_fw_achieve_formatlog.pl $format42shop 42"; ./scan_fw_achieve_formatlog.pl $format42shop 42; done
+for format44shop in `ls -1 /data2/gamelogs2/fw/44/*world.formatlog`; do echo "./scan_fw_achieve_formatlog.pl $format44shop 44"; ./scan_fw_achieve_formatlog.pl $format44shop 44; done
+for format46shop in `ls -1 /data2/gamelogs2/fw/46/*world.formatlog`; do echo "./scan_fw_achieve_formatlog.pl $format46shop 46"; ./scan_fw_achieve_formatlog.pl $format46shop 46; done
+for format47shop in `ls -1 /data2/gamelogs2/fw/47/*world.formatlog`; do echo "./scan_fw_achieve_formatlog.pl $format47shop 47"; ./scan_fw_achieve_formatlog.pl $format47shop 47; done
+for format48shop in `ls -1 /data2/gamelogs2/fw/48/*world.formatlog`; do echo "./scan_fw_achieve_formatlog.pl $format48shop 48"; ./scan_fw_achieve_formatlog.pl $format48shop 48; done
+for format49shop in `ls -1 /data2/gamelogs2/fw/49/*world.formatlog`; do echo "./scan_fw_achieve_formatlog.pl $format49shop 49"; ./scan_fw_achieve_formatlog.pl $format49shop 49; done
+
+for uni39shop in `ls -1 /data2/gamelogs2/fw/39/*world.formatlog`; do echo "./scan_fw_achieve_uniquest.pl $uni39shop 39"; ./scan_fw_achieve_uniquest.pl $uni39shop 39; done
+for uni42shop in `ls -1 /data2/gamelogs2/fw/42/*world.formatlog`; do echo "./scan_fw_achieve_uniquest.pl $uni42shop 42"; ./scan_fw_achieve_uniquest.pl $uni42shop 42; done
+for uni44shop in `ls -1 /data2/gamelogs2/fw/44/*world.formatlog`; do echo "./scan_fw_achieve_uniquest.pl $uni44shop 44"; ./scan_fw_achieve_uniquest.pl $uni44shop 44; done
+for uni46shop in `ls -1 /data2/gamelogs2/fw/46/*world.formatlog`; do echo "./scan_fw_achieve_uniquest.pl $uni46shop 46"; ./scan_fw_achieve_uniquest.pl $uni46shop 46; done
+for uni47shop in `ls -1 /data2/gamelogs2/fw/47/*world.formatlog`; do echo "./scan_fw_achieve_uniquest.pl $uni47shop 47"; ./scan_fw_achieve_uniquest.pl $uni47shop 47; done
+for uni48shop in `ls -1 /data2/gamelogs2/fw/48/*world.formatlog`; do echo "./scan_fw_achieve_uniquest.pl $uni48shop 48"; ./scan_fw_achieve_uniquest.pl $uni48shop 48; done
+for uni49shop in `ls -1 /data2/gamelogs2/fw/49/*world.formatlog`; do echo "./scan_fw_achieve_uniquest.pl $uni49shop 49"; ./scan_fw_achieve_uniquest.pl $uni49shop 49; done
+
+for chat39shop in `ls -1 /data2/gamelogs2/fw/39/*world.chat.gz`; do echo "./scan_fw_achieve_chat.pl $chat39shop 39"; ./scan_fw_achieve_chat.pl $chat39shop 39; done
+for chat43shop in `ls -1 /data2/gamelogs2/fw/42/*world.chat.gz`; do echo "./scan_fw_achieve_chat.pl $chat42shop 42"; ./scan_fw_achieve_chat.pl $chat42shop 42; done
+for chat44shop in `ls -1 /data2/gamelogs2/fw/44/*world.chat.gz`; do echo "./scan_fw_achieve_chat.pl $chat44shop 44"; ./scan_fw_achieve_chat.pl $chat44shop 44; done
+for chat46shop in `ls -1 /data2/gamelogs2/fw/46/*world.chat.gz`; do echo "./scan_fw_achieve_chat.pl $chat46shop 46"; ./scan_fw_achieve_chat.pl $chat46shop 46; done
+for chat47shop in `ls -1 /data2/gamelogs2/fw/47/*world.chat.gz`; do echo "./scan_fw_achieve_chat.pl $chat47shop 47"; ./scan_fw_achieve_chat.pl $chat47shop 47; done
+for chat48shop in `ls -1 /data2/gamelogs2/fw/48/*world.chat.gz`; do echo "./scan_fw_achieve_chat.pl $chat48shop 48"; ./scan_fw_achieve_chat.pl $chat48shop 48; done
+for chat49shop in `ls -1 /data2/gamelogs2/fw/49/*world.chat.gz`; do echo "./scan_fw_achieve_chat.pl $chat49shop 49"; ./scan_fw_achieve_chat.pl $chat49shop 49; done
+
+for log39shop in `ls -1 /data2/gamelogs2/fw/39/*world.log.gz`; do echo "./scan_fw_achieve_log.pl $log39shop 39"; ./scan_fw_achieve_log.pl $log39shop 39; done
+for log42shop in `ls -1 /data2/gamelogs2/fw/42/*world.log.gz`; do echo "./scan_fw_achieve_log.pl $log42shop 42"; ./scan_fw_achieve_log.pl $log42shop 42; done
+for log44shop in `ls -1 /data2/gamelogs2/fw/44/*world.log.gz`; do echo "./scan_fw_achieve_log.pl $log44shop 44"; ./scan_fw_achieve_log.pl $log44shop 44; done
+for log46shop in `ls -1 /data2/gamelogs2/fw/46/*world.log.gz`; do echo "./scan_fw_achieve_log.pl $log46shop 46"; ./scan_fw_achieve_log.pl $log46shop 46; done
+for log47shop in `ls -1 /data2/gamelogs2/fw/47/*world.log.gz`; do echo "./scan_fw_achieve_log.pl $log47shop 47"; ./scan_fw_achieve_log.pl $log47shop 47; done
+for log48shop in `ls -1 /data2/gamelogs2/fw/48/*world.log.gz`; do echo "./scan_fw_achieve_log.pl $log48shop 48"; ./scan_fw_achieve_log.pl $log48shop 48; done
+for log49shop in `ls -1 /data2/gamelogs2/fw/49/*world.log.gz`; do echo "./scan_fw_achieve_log.pl $log49shop 49"; ./scan_fw_achieve_log.pl $log49shop 49; done
+
+for guild39shop in `ls -1 /data2/gamelogs2/fw/39/*world.formatlog`; do echo "./scan_fw_guild.pl $guild39shop 39"; ./scan_fw_guild.pl $guild39shop 39; done
+for guild42shop in `ls -1 /data2/gamelogs2/fw/42/*world.formatlog`; do echo "./scan_fw_guild.pl $guild42shop 42"; ./scan_fw_guild.pl $guild42shop 42; done
+for guild44shop in `ls -1 /data2/gamelogs2/fw/44/*world.formatlog`; do echo "./scan_fw_guild.pl $guild44shop 44"; ./scan_fw_guild.pl $guild44shop 44; done
+for guild46shop in `ls -1 /data2/gamelogs2/fw/46/*world.formatlog`; do echo "./scan_fw_guild.pl $guild46shop 46"; ./scan_fw_guild.pl $guild46shop 46; done
+for guild47shop in `ls -1 /data2/gamelogs2/fw/47/*world.formatlog`; do echo "./scan_fw_guild.pl $guild47shop 47"; ./scan_fw_guild.pl $guild47shop 47; done
+for guild48shop in `ls -1 /data2/gamelogs2/fw/48/*world.formatlog`; do echo "./scan_fw_guild.pl $guild48shop 48"; ./scan_fw_guild.pl $guild48shop 48; done
+for guild49shop in `ls -1 /data2/gamelogs2/fw/49/*world.formatlog`; do echo "./scan_fw_guild.pl $guild49shop 49"; ./scan_fw_guild.pl $guild49shop 49; done
+=============================
+
+for format39shop in `ls -1 /gamelogs2/39/*world.formatlog`; do echo "./scan_fw_achieve_formatlog.pl $format39shop 39"; ./scan_fw_achieve_formatlog.pl $format39shop 39; done
+for format42shop in `ls -1 /gamelogs2/42/*world.formatlog`; do echo "./scan_fw_achieve_formatlog.pl $format42shop 42"; ./scan_fw_achieve_formatlog.pl $format42shop 42; done
+for format44shop in `ls -1 /gamelogs2/44/*world.formatlog`; do echo "./scan_fw_achieve_formatlog.pl $format44shop 44"; ./scan_fw_achieve_formatlog.pl $format44shop 44; done
+for format46shop in `ls -1 /gamelogs2/46/*world.formatlog`; do echo "./scan_fw_achieve_formatlog.pl $format46shop 46"; ./scan_fw_achieve_formatlog.pl $format46shop 46; done
+for format47shop in `ls -1 /gamelogs2/47/*world.formatlog`; do echo "./scan_fw_achieve_formatlog.pl $format47shop 47"; ./scan_fw_achieve_formatlog.pl $format47shop 47; done
+for format48shop in `ls -1 /gamelogs2/48/*world.formatlog`; do echo "./scan_fw_achieve_formatlog.pl $format48shop 48"; ./scan_fw_achieve_formatlog.pl $format48shop 48; done
+for format49shop in `ls -1 /gamelogs2/49/*world.formatlog`; do echo "./scan_fw_achieve_formatlog.pl $format49shop 49"; ./scan_fw_achieve_formatlog.pl $format49shop 49; done
+
+for uni39shop in `ls -1 /gamelogs2/39/*world.formatlog`; do echo "./scan_fw_achieve_uniquest.pl $uni39shop 39"; ./scan_fw_achieve_uniquest.pl $uni39shop 39; done
+for uni42shop in `ls -1 /gamelogs2/42/*world.formatlog`; do echo "./scan_fw_achieve_uniquest.pl $uni42shop 42"; ./scan_fw_achieve_uniquest.pl $uni42shop 42; done
+for uni44shop in `ls -1 /gamelogs2/44/*world.formatlog`; do echo "./scan_fw_achieve_uniquest.pl $uni44shop 44"; ./scan_fw_achieve_uniquest.pl $uni44shop 44; done
+for uni46shop in `ls -1 /gamelogs2/46/*world.formatlog`; do echo "./scan_fw_achieve_uniquest.pl $uni46shop 46"; ./scan_fw_achieve_uniquest.pl $uni46shop 46; done
+for uni47shop in `ls -1 /gamelogs2/47/*world.formatlog`; do echo "./scan_fw_achieve_uniquest.pl $uni47shop 47"; ./scan_fw_achieve_uniquest.pl $uni47shop 47; done
+for uni48shop in `ls -1 /gamelogs2/48/*world.formatlog`; do echo "./scan_fw_achieve_uniquest.pl $uni48shop 48"; ./scan_fw_achieve_uniquest.pl $uni48shop 48; done
+for uni49shop in `ls -1 /gamelogs2/49/*world.formatlog`; do echo "./scan_fw_achieve_uniquest.pl $uni49shop 49"; ./scan_fw_achieve_uniquest.pl $uni49shop 49; done
+
+for chat39shop in `ls -1 /gamelogs2/39/*world.chat.gz`; do echo "./scan_fw_achieve_chat.pl $chat39shop 39"; ./scan_fw_achieve_chat.pl $chat39shop 39; done
+for chat42shop in `ls -1 /gamelogs2/42/*world.chat.gz`; do echo "./scan_fw_achieve_chat.pl $chat42shop 42"; ./scan_fw_achieve_chat.pl $chat42shop 42; done
+for chat44shop in `ls -1 /gamelogs2/44/*world.chat.gz`; do echo "./scan_fw_achieve_chat.pl $chat44shop 44"; ./scan_fw_achieve_chat.pl $chat44shop 44; done
+for chat46shop in `ls -1 /gamelogs2/46/*world.chat.gz`; do echo "./scan_fw_achieve_chat.pl $chat46shop 46"; ./scan_fw_achieve_chat.pl $chat46shop 46; done
+for chat47shop in `ls -1 /gamelogs2/47/*world.chat.gz`; do echo "./scan_fw_achieve_chat.pl $chat47shop 47"; ./scan_fw_achieve_chat.pl $chat47shop 47; done
+for chat48shop in `ls -1 /gamelogs2/48/*world.chat.gz`; do echo "./scan_fw_achieve_chat.pl $chat48shop 48"; ./scan_fw_achieve_chat.pl $chat48shop 48; done
+for chat49shop in `ls -1 /gamelogs2/49/*world.chat.gz`; do echo "./scan_fw_achieve_chat.pl $chat49shop 49"; ./scan_fw_achieve_chat.pl $chat49shop 49; done
+
+for log39shop in `ls -1 /gamelogs2/39/*world.log.gz`; do echo "./scan_fw_achieve_log.pl $log39shop 39"; ./scan_fw_achieve_log.pl $log39shop 39; done
+for log42shop in `ls -1 /gamelogs2/42/*world.log.gz`; do echo "./scan_fw_achieve_log.pl $log42shop 42"; ./scan_fw_achieve_log.pl $log42shop 42; done
+for log44shop in `ls -1 /gamelogs2/44/*world.log.gz`; do echo "./scan_fw_achieve_log.pl $log44shop 44"; ./scan_fw_achieve_log.pl $log44shop 44; done
+for log46shop in `ls -1 /gamelogs2/46/*world.log.gz`; do echo "./scan_fw_achieve_log.pl $log46shop 46"; ./scan_fw_achieve_log.pl $log46shop 46; done
+for log47shop in `ls -1 /gamelogs2/47/*world.log.gz`; do echo "./scan_fw_achieve_log.pl $log47shop 47"; ./scan_fw_achieve_log.pl $log47shop 47; done
+for log48shop in `ls -1 /gamelogs2/48/*world.log.gz`; do echo "./scan_fw_achieve_log.pl $log48shop 48"; ./scan_fw_achieve_log.pl $log48shop 48; done
+for log49shop in `ls -1 /gamelogs2/49/*world.log.gz`; do echo "./scan_fw_achieve_log.pl $log49shop 49"; ./scan_fw_achieve_log.pl $log49shop 49; done
+
+
+
+for guild39shop in `ls -1 /gamelogs2/39/*world.formatlog`; do echo "./scan_fw_guild.pl $guild39shop 39"; ./scan_fw_roleid_to_user.pl $guild39shop 39 ; ./scan_fw_guild.pl $guild39shop 39; done
+for guild42shop in `ls -1 /gamelogs2/42/*world.formatlog`; do echo "./scan_fw_guild.pl $guild42shop 42"; ./scan_fw_roleid_to_user.pl $guild42shop 42 ; ./scan_fw_guild.pl $guild42shop 42; done
+for guild44shop in `ls -1 /gamelogs2/44/*world.formatlog`; do echo "./scan_fw_guild.pl $guild44shop 44"; ./scan_fw_roleid_to_user.pl $guild44shop 44 ; ./scan_fw_guild.pl $guild44shop 44; done
+for guild46shop in `ls -1 /gamelogs2/46/*world.formatlog`; do echo "./scan_fw_guild.pl $guild46shop 46"; ./scan_fw_roleid_to_user.pl $guild46shop 46 ; ./scan_fw_guild.pl $guild46shop 46; done
+for guild47shop in `ls -1 /gamelogs2/47/*world.formatlog`; do echo "./scan_fw_guild.pl $guild47shop 47"; ./scan_fw_roleid_to_user.pl $guild47shop 47 ; ./scan_fw_guild.pl $guild47shop 47; done
+for guild48shop in `ls -1 /gamelogs2/48/*world.formatlog`; do echo "./scan_fw_guild.pl $guild48shop 48"; ./scan_fw_roleid_to_user.pl $guild48shop 48 ; ./scan_fw_guild.pl $guild48shop 48; done
+for guild49shop in `ls -1 /gamelogs2/49/*world.formatlog`; do echo "./scan_fw_guild.pl $guild49shop 49"; ./scan_fw_roleid_to_user.pl $guild49shop 49 ; ./scan_fw_guild.pl $guild49shop 49; done
