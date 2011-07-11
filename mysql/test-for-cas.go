@@ -6,14 +6,22 @@ import "rand"
 import mysql "github.com/Philio/GoMySQL"
 
 
+const (
+	HOST := "localhost:33060"
+	USER := "root"
+	PASSWD := ""
+	DB := "crm_test"
+)
+
+
 func newDBConn() *Client {
-	db, err := mysql.DialTCP("localhost:33060", "root", "", "crm_test")
+	client, err := mysql.DialTCP(HOST, USER, PASSWD, DB)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 	
-	return db
+	return client
 }
 
 func query1(cli *Client) {
@@ -38,11 +46,11 @@ func query1(cli *Client) {
 			newrow.name = "testname"
 			
 			rowgen <- newrow
-			
 		}
 	}()
 
 	for {
+		fmt.Println("query1 start...")
 		newrow := <-rowgen
 		stmt, err := cli.Prepare("INSERT INTO role_info VALUES(?,?,?,?,?)")
 		if err != nil {
@@ -60,13 +68,16 @@ func query1(cli *Client) {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+		fmt.Println("query1 end.")
 	}
 }
 
 func main() {
-	fmt.Println("mysql library test")
+	fmt.Println("Test start...")
 	
-	mysql_init()
+	go query1(newDBConn())
+
+	fmt.Println("Test end.")
 }
 
 func mysql_init() {
