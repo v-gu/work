@@ -48,9 +48,9 @@ func query1(cli *mysql.Client) {
 			rowgen <- newrow
 		}
 	}()
-
+	
+	fmt.Println("query1 start...")
 	for {
-		fmt.Println("query1 start...")
 		newrow := <-rowgen
 		stmt, err := cli.Prepare("INSERT INTO role_info VALUES(?,?,?,?,?)")
 		if err != nil {
@@ -68,15 +68,25 @@ func query1(cli *mysql.Client) {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-		fmt.Println("query1 end.")
 	}
+	fmt.Println("query1 end.")
 }
 
 func main() {
 	fmt.Println("Test start...")
 	
-	go query1(newDBConn())
+	queries := 1
+	workpipe := make(chan int)
 
+	// init query1
+	go func() {
+		query1(newDBConn())
+		workpipe <- 1
+	} ()
+
+	for i := 0; i < queries; i += <-workpipe { }
+
+	// end
 	fmt.Println("Test end.")
 }
 
