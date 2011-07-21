@@ -26,6 +26,7 @@ func newDBConn() *mysql.Client {
 	return client
 }
 
+
 /*
  Query1, DML(INSERT) on role_info.
  */
@@ -154,7 +155,7 @@ func main() {
 	fmt.Println("indivisual test:")
 	// query1(newDBConn())
 	// query2(newDBConn())
-	query3(newDBConn())
+	// query3(newDBConn())
 	
 	queries := 2
 	workpipe := make(chan int)
