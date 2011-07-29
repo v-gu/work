@@ -41,7 +41,6 @@ func query1(cli *mysql.Client) {
 		date		string
 		name		string
 	}
-	
 	fmt.Printf("%s started...\n", query_name)
 	starttime := time.Nanoseconds()
 	for i := 0; i < loop_count; i++ {
@@ -51,7 +50,6 @@ func query1(cli *mysql.Client) {
 		newrow.server = int8(rand.Intn(100))
 		newrow.date = "2011-06-26 10:20:24"
 		newrow.name = "testname"
-
 		cli.Start()
 		stmt, err := cli.Prepare("INSERT IGNORE INTO " +
 			"role_info VALUES(?,?,?,?,?)")
@@ -87,7 +85,6 @@ func query2(cli *mysql.Client) {
 	fmt.Printf("%s started...\n", query_name)
 	starttime := time.Nanoseconds()
 	for i := 0; i < loop_count; i++ {
-
 		cli.Start()
 		stmt, err := cli.Prepare("UPDATE role_info SET NAME = ? " +
 			"WHERE name IS NULL")
@@ -114,38 +111,63 @@ func query2(cli *mysql.Client) {
 
 
 /*
- Query3, DML(DELETE) on role_info.
+ Query3, DML(DELETE) on role_info by server and roleid.
  */
 func query3(cli *mysql.Client) {
-	query_name := "[query3]"
-	loop_count := 1000
-
-	fmt.Printf("%s started...\n", query_name)
+	queryName := "[query3]"
+	roleCount := 1000
+	fmt.Printf("%s started...\n", queryName)
 	starttime := time.Nanoseconds()
-	for i := 0; i < loop_count; i++ {
-
-		cli.Start()
-		stmt, err := cli.Prepare("DELETE FROM role_info SET NAME = ? " +
-			"WHERE name IS NULL")
+	cli.Start()
+	stmt, err := cli.Prepare("SELECT server, roleid FROM role_info LIMIT 1000")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, queryName + err.String())
+		return
+	}
+	err = stmt.Execute()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, queryName + err.String())
+		return
+	}
+	err = stmt.StoreResult()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, queryName + err.String())
+		return
+	}
+	fmt.Printf("records: %d\n", stmt.RowCount())
+	// retrieve and store names
+	type role struct {
+		server string
+		roleid string
+	}
+	roles := make([]role, roleCount)
+	var server, roleid string
+	err = stmt.BindResult(&server, &roleid)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, queryName + err.String())
+		return
+	}
+	for {
+		eof, err := stmt.Fetch(); 
 		if err != nil {
-			fmt.Fprintln(os.Stderr, query_name + err.String())
-			os.Exit(1)
+			fmt.Fprintln(os.Stderr, queryName + err.String())
+			continue
 		}
-		err = stmt.BindParams("'testname'")
-		if err != nil {
-			fmt.Fprintln(os.Stderr, query_name + err.String())
-			os.Exit(1)
-		}
-		err = stmt.Execute()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, query_name + err.String())
-			os.Exit(1)
-		}
-		cli.Rollback()
+		if eof { break }
+		fmt.Println(server)
+		role := &role{server, roleid}
+		roles = append(roles, *role)
+	}
+	stmt.FreeResult()
+	stmt.Reset()
+	for _, role := range roles {
+		stmt.Prepare("DELETE FROM role_info WHERE server=? AND roleid=?")
+		stmt.BindParams(role.server, role.roleid)
+		stmt.
 	}
 	endtime := time.Nanoseconds()
-	fmt.Printf("%s ended. Averange query time: %d nanosecs.\n", query_name,
-		(endtime-starttime)/((int64)(loop_count)))
+	fmt.Printf("%s ended. Averange query time: %d nanosecs.\n", queryName,
+		(endtime-starttime)/((int64)(roleCount)))
 }
 
 
@@ -155,7 +177,8 @@ func main() {
 	fmt.Println("indivisual test:")
 	// query1(newDBConn())
 	// query2(newDBConn())
-	// query3(newDBConn())
+	query3(newDBConn())
+	return
 	
 	queries := 2
 	workpipe := make(chan int)
@@ -172,41 +195,5 @@ func main() {
 	// 	workpipe <- 1
 	// } ()
 
-	
-
 	for i := 0; i < queries; i += <-workpipe { }
 }
-
-func mysql_init() {
-	db, err := mysql.DialTCP("localhost:33060", "root", "", "crm_test")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	err = db.Query("update testtbl set idd = 14")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	err = db.Query("select * from testtbl")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-	
-	// Get result set  
-	result, err := db.UseResult()  
-	if err != nil {  
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)  
-	}  
-
-	for {
-		row := result.FetchRow()  
-		if row == nil { break }  
-		fmt.Println(row)
-	}
-}
-
