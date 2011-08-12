@@ -15,6 +15,10 @@ const (
 	DB = "crm_test"
 )
 
+var (
+	DRYRUN_MODE = true
+)
+
 
 func newDBConn() *mysql.Client {
 	client, err := mysql.DialTCP(HOST, USER, PASSWD, DB)
@@ -41,7 +45,12 @@ func query1(cli *mysql.Client) {
 		date		string
 		name		string
 	}
-	fmt.Printf("%s started...\n", query_name)
+	if !DRYRUN_MODE {
+		fmt.Printf("%s started...\n", query_name)
+	} else {
+		fmt.Printf("%s will be started with following statements:\n",
+			query_name)
+	}
 	starttime := time.Nanoseconds()
 	for i := 0; i < loop_count; i++ {
 		newrow := &row{}
@@ -50,29 +59,39 @@ func query1(cli *mysql.Client) {
 		newrow.server = int8(rand.Intn(100))
 		newrow.date = "2011-06-26 10:20:24"
 		newrow.name = "testname"
-		cli.Start()
-		stmt, err := cli.Prepare("INSERT IGNORE INTO " +
-			"role_info VALUES(?,?,?,?,?)")
-		if err != nil {
-			fmt.Fprintln(os.Stderr, query_name + err.String())
-			os.Exit(1)
+		if !DRYRUN_MODE {
+			cli.Start()
+			stmt, err := cli.Prepare("INSERT IGNORE INTO role_info " +
+				"VALUES(?,?,?,?,?)")
+			if err != nil {
+				fmt.Fprintln(os.Stderr, query_name + err.String())
+				os.Exit(1)
+			}
+			err = stmt.BindParams(newrow.userid, newrow.roleid, newrow.server,
+				newrow.date, newrow.name)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, query_name + err.String())
+				os.Exit(1)
+			}
+			err = stmt.Execute()
+			if err != nil {
+				fmt.Fprintln(os.Stderr, query_name + err.String())
+				os.Exit(1)
+			}
+			cli.Rollback()
+		} else {
+			fmt.Printf("INSERT IGNORE INTO role_info VALUES(%s,%s,%s,%s,%s)\n",
+				newrow.userid, newrow.roleid, newrow.server, newrow.date,
+				newrow.name)
 		}
-		err = stmt.BindParams(newrow.userid, newrow.roleid, newrow.server,
-			newrow.date, newrow.name)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, query_name + err.String())
-			os.Exit(1)
-		}
-		err = stmt.Execute()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, query_name + err.String())
-			os.Exit(1)
-		}
-		cli.Rollback()
 	}
 	endtime := time.Nanoseconds()
-	fmt.Printf("%s ended. Averange query time: %d nanosecs.\n", query_name,
-		(endtime-starttime)/((int64)(loop_count)))
+	if !DRYRUN_MODE {
+		fmt.Printf("%s ended. Averange query time: %d nanosecs.\n", query_name,
+			(endtime-starttime)/((int64)(loop_count)))
+	} else {
+		fmt.Printf("%s ended.\n", query_name)
+	}
 }
 
 /*
@@ -82,31 +101,45 @@ func query2(cli *mysql.Client) {
 	query_name := "[query2]"
 	loop_count := 10
 
-	fmt.Printf("%s started...\n", query_name)
+	if !DRYRUN_MODE {
+		fmt.Printf("%s started...\n", query_name)
+	} else {
+		fmt.Printf("%s will be started with following statements:\n",
+			query_name)
+	}
 	starttime := time.Nanoseconds()
 	for i := 0; i < loop_count; i++ {
-		cli.Start()
-		stmt, err := cli.Prepare("UPDATE role_info SET NAME = ? " +
-			"WHERE name IS NULL")
-		if err != nil {
-			fmt.Fprintln(os.Stderr, query_name + err.String())
-			os.Exit(1)
+		if !DRYRUN_MODE {
+			cli.Start()
+			stmt, err := cli.Prepare("UPDATE role_info SET NAME = ? " +
+				"WHERE name IS NULL")
+			if err != nil {
+				fmt.Fprintln(os.Stderr, query_name + err.String())
+				os.Exit(1)
+			}
+			err = stmt.BindParams("'testname'")
+			if err != nil {
+				fmt.Fprintln(os.Stderr, query_name + err.String())
+				os.Exit(1)
+			}
+			err = stmt.Execute()
+			if err != nil {
+				fmt.Fprintln(os.Stderr, query_name + err.String())
+				os.Exit(1)
+			}
+			cli.Rollback()
+		} else {
+			fmt.Printf("UPDATE role_info SET NAME = %s WHERE name IS NULL\n",
+				"'testname'")
 		}
-		err = stmt.BindParams("'testname'")
-		if err != nil {
-			fmt.Fprintln(os.Stderr, query_name + err.String())
-			os.Exit(1)
-		}
-		err = stmt.Execute()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, query_name + err.String())
-			os.Exit(1)
-		}
-		cli.Rollback()
 	}
 	endtime := time.Nanoseconds()
-	fmt.Printf("%s ended. Averange query time: %d nanosecs.\n", query_name,
-		(endtime-starttime)/((int64)(loop_count)))
+	if !DRYRUN_MODE {
+		fmt.Printf("%s ended. Averange query time: %d nanosecs.\n", query_name,
+			(endtime-starttime)/((int64)(loop_count)))
+	} else {
+		fmt.Printf("%s ended.\n", query_name)
+	}
 }
 
 
@@ -116,10 +149,15 @@ func query2(cli *mysql.Client) {
 func query3(cli *mysql.Client) {
 	queryName := "[query3]"
 	roleCount := 1000
-	fmt.Printf("%s started...\n", queryName)
+	if !DRYRUN_MODE {
+		fmt.Printf("%s started...\n", queryName)
+	} else {
+		fmt.Printf("%s will be started with following statements:\n", queryName)
+	}
 	starttime := time.Nanoseconds()
 	cli.Start()
-	stmt, err := cli.Prepare("SELECT server, roleid FROM role_info LIMIT 1000")
+	stmt, err := cli.Prepare(
+		fmt.Sprintf("SELECT server, roleid FROM role_info LIMIT %d", roleCount))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, queryName + err.String())
 		return
@@ -160,14 +198,39 @@ func query3(cli *mysql.Client) {
 	}
 	stmt.FreeResult()
 	stmt.Reset()
-	for _, role := range roles {
-		stmt.Prepare("DELETE FROM role_info WHERE server=? AND roleid=?")
-		stmt.BindParams(role.server, role.roleid)
-		stmt.
+	if !DRYRUN_MODE {
+		for _, role := range roles {
+			stmt, err := stmt.Prepare("DELETE FROM role_info WHERE server=? " +
+				"AND roleid=?")
+			if err != nil {
+				fmt.Fprintln(os.Stderr, query_name + err.String())
+				os.Exit(1)
+			}
+			err = stmt.BindParams(role.server, role.roleid)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, query_name + err.String())
+				os.Exit(1)
+			}
+			err = stmt.Execute()
+			if err != nil {
+				fmt.Fprintln(os.Stderr, query_name + err.String())
+				os.Exit(1)
+			}
+			
+		}
+	} else {
+		for _, role := range roles {
+			fmt.Printf("DELETE FROM role_info WHERE server=%s AND roleid=%s\n",
+				role.server, role.roleid)
+		}
 	}
 	endtime := time.Nanoseconds()
-	fmt.Printf("%s ended. Averange query time: %d nanosecs.\n", queryName,
-		(endtime-starttime)/((int64)(roleCount)))
+	if !DRYRUN_MODE {
+		fmt.Printf("%s ended. Averange query time: %d nanosecs.\n", queryName,
+			(endtime-starttime)/((int64)(roleCount)))
+	} else {
+		fmt.Printf("%s ended.\n", queryName)
+	}
 }
 
 
