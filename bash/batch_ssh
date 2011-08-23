@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+WEST_SERVERS="mysql mysql2 mysql3 mysql4 mysql5 mysql6 mysql7 mysql8 mysql9
+mysql10 mysql11 mysql12 mysql13 mysql14 mysql17 mysql18 mysql19 mysql20 mysql23
+mysql24 mysql25 mysql26 mysql27 mysql28 mysql29 mysql30 mysql31 mysql32"
+EAST_SERVERS="mysql-east mysql2-east mysql3-east"
+EU_SERVERS="mysql-eu mysql2-eu mysql3-eu mysql4-eu mysql5-eu mysql6-eu mysql7-eu
+mysql8-eu mysql9-eu mysql10-eu mysql11-eu mysql12-eu mysql13-eu mysql14-eu 
+mysql15-eu mysql16-eu mysql17-eu mysql18-eu"
+SERVERS=""
+USE_TERM=false
+FILE=""
+TMPFILE=""
+OUTPUT_DIR=""
+VERBOSE=true
+
+help() {
+    cat 1>&2 <<-EOF
+Usage: $(basename $0) (-w|-e|-u|-s servers [...]) [OPTIONS] command args
+           Execute command on remote host with args passed to it as arguments
+   or: $(basename $0) (-w|-e|-u|-s servers [...]) [OPTIONS] -f file args
+           Execute local file on remote host with args passed to it
+   or: $(basename $0) (-w|-e|-u|-s servers [...]) [OPTIONS] -f - args <file
+           Execute contents of STDIN on remote host with args passed to it
+
+OPTIONS:
+  -s specify servers explictly, like "mysql2 mysql4 ... mysql30"
+  -e add estern MySQL servers
+  -u add EU MySQL servers
+  -w add western MySQL servers
+
+  -f specicy a file to execute
+  -o specify an optput directory to store server outputs, one file per server
+
+  -t force allocate terminal on remote machine
+  -c makes local screen output cleann
+
+  -h show help
+EOF
+}
+
+# Parse args
+if [[ $# -eq 0 ]];then
+    help
+    exit 1
+fi
+while getopts 'cef:ho:s:tuw' OPT; do
+    case "$OPT" in
+        s) SERVERS="$SERVERS $OPTARG";;
+        e) SERVERS="$SERVERS $EAST_SERVERS";;
+        u) SERVERS="$SERVERS $EU_SERVERS";;
+        w) SERVERS="$SERVERS $WEST_SERVERS";;
+        f) FILE="$OPTARG";;
+        o) OUTPUT_DIR="$OPTARG";;
+        t) USE_TERM=true;;
+        c) VERBOSE=false;;
+        h) help; exit 1;;
+       [?]) help; exit 1;;
+    esac
+done
+if [[ "$SERVERS" == "" ]];then
+    help
+    exit 1
+fi
+echo $@
+shift $((OPTIND-1))
+if [[ "$FILE" == "-" ]];then
+    TMPFILE=$(tempfile)
+    cat /dev/stdin > "$TMPFILE"
+    FILE="$TMPFILE"
+fi
+
+
+# prepare ssh environment
+sshcmd="ssh "
+if [[ "$USE_TERM" == "true" ]];then
+    sshcmd="$sshcmd -t"
+else
+    sshcmd="$sshcmd -T"
+fi
+if [[ "$FILE" != "" ]];then
+    sshcmd="$sshcmd <$FILE"
+fi
+
+
+# run batch
+for i in $SERVERS;do
+    if [[ "$VERBOSE" == "true" ]];then
+        echo ["$i"]:
+        eval "$sshcmd $i $@"
+    else
+        eval "$sshcmd $i $@"
+    fi
+done
+
+# cleanup
+if [[ "$TMPFILE" != "" ]];then
+   rm "$TMPFILE"
+fi
+
