@@ -1,0 +1,59 @@
+mtop 
+
+Shows the mysql commands consuming the greatest time.  By default, only 
+non-sleeping threads are shown, the --idle option shows idle threads.  
+While running several keys will affect the operation of mtop.  Hitting 
+'h' or '?' shows the available options.
+
+'mtop --help' shows usage
+
+See 'perldoc mtop' for for documenation.
+
+To install mtop, run the following:
+
+    perl Makefile.PL
+    make
+    make install
+
+Run:
+
+    perl Makefile.PL --prefix={install_prefix}
+    
+or change the PREFIX line in Makefile.PL to customize install location.  
+The default {install_prefix} is /usr/local which means mtop will be 
+installed in /usr/local/bin/.
+
+mtop requires the following perl modules:
+
+    Module        Available At
+    ------------  --------------------------------------------------------
+    Curses        http://www.cpan.org/authors/id/WPS
+    DBI           Distributed as Bundle::DBI: http://www.cpan.org/authors/id/TIMB
+    DBD::mysql    http://www.cpan.org/authors/id/JWIED
+    Getopt::Long  (Distributed with Perl 5)
+    Net::Domain   Part of libnet: http://www.cpan.org/authors/id/GBARR/
+
+Send bugs/comments to Marc Prewitt <mprewitt@chelsea.net>
+
+--------------------------------------------------------------------------
+
+mtop - Shows the MySQL commands consuming the greatest time
+Copyright (C) 2002 Marc Prewitt/Chelsea Networks <mprewitt@chelsea.net>
+
+This file is part of mtop.
+
+mtop is free software; you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software
+Foundation; either version 2 of the License, or (at your option) any later
+version.
+
+mtop is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+$Id: README,v 1.7 2002/07/03 20:22:15 mdprewitt Exp $

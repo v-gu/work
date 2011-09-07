@@ -1,0 +1,211 @@
+<HTML>
+<HEAD>
+<TITLE>B<mkill> - Kills slow queries</TITLE>
+<LINK REV="made" HREF="mailto:systems@chelsea.net">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#options">OPTIONS</A></LI>
+	<LI><A HREF="#filter options">FILTER OPTIONS</A></LI>
+	<LI><A HREF="#setup">SETUP</A></LI>
+	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#known bugs">KNOWN BUGS</A></LI>
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P><STRONG>mkill</STRONG> - Kills slow queries</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+    mkill [--host={mysql_host}] [--dbuser={mysql_user}] 
+        [--password={mysqluser_pw}] 
+        [--filter-user={regex}] [--filter-host={regex}] [--filter-db={regex}]
+        [--filter-command={regex}] [--filter-state={regex}] [--filter-info={{regex}}]
+        [--user={user}] [--slow={seconds}] 
+        [--daemonize] [--test]</PRE>
+<PRE>
+    mkill --help</PRE>
+<PRE>
+    mkill --version</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P>This is an alpha version of this program.  Please let me know what you think and what
+additional features would be nice.  Future version will most likely perform the same
+but have different output.  One idea i've been thinking about is letting you specify
+filters which short perl snippets instead of just regexes.</P>
+<P>This program kills long running queries based on several criteria including query time,
+host, user, database, state, and query content.</P>
+<P>The following keys are active while mkill is running:</P>
+<PRE>
+    q - quit</PRE>
+<P>A log of killed queries is sent to STDERR, watched queries are sent to STDOUT.  A typical
+command line would be:</P>
+<PRE>
+    mkill -sl 180 -fi 'select.*from bad_table' &gt; /var/log/mkill.out 2&gt; /var/log/mkill.kill</PRE>
+<P>
+<HR>
+<H1><A NAME="options">OPTIONS</A></H1>
+<P>All options can be abbreviated by their shortest unique abbreviation.</P>
+<DL>
+<DT><STRONG><A NAME="item_%2D%3F%2C_%2D%2Dhelp">-?, --help</A></STRONG><BR>
+<DD>
+Show the help screen and exit.
+<P></P>
+<DT><STRONG><A NAME="item_%2Dt%2C_%2D%2Dtest">-t, --test</A></STRONG><BR>
+<DD>
+Show what would be done but don't actually kill anything.  Good for testing
+your filter expressions.
+<P></P>
+<DT><STRONG><A NAME="item_%2Dv%2C_%2D%2Dversion">-v, --version</A></STRONG><BR>
+<DD>
+Show the version number and exit.
+<P></P>
+<DT><STRONG><A NAME="item_%2Dh_%7Bmysql_host%7D%2C_%2D%2Dhost%3D%7Bmysql_hos">-h {mysql_host}, --host={mysql_host}</A></STRONG><BR>
+<DD>
+By default, the mysqld on localhost is monitored.  Specify an alternate host
+with this option.
+<P></P>
+<DT><STRONG><A NAME="item_%2Ddbu_%7Bmysql_user%7D%2C_%2D%2Ddbuser%3D%7Bmysql">-dbu {mysql_user}, --dbuser={mysql_user}</A></STRONG><BR>
+<DD>
+By default, the user 'mysqltop' is used to connect to the database.  Specify an alternate user with this option.
+<P></P>
+<DT><STRONG><A NAME="item_%2Dp_%7Bmysqluser_pw%7D%2C_%2D%2Dpassword%3D%7Bmys">-p {mysqluser_pw}, --password={mysqluser_pw}</A></STRONG><BR>
+<DD>
+By default, there is no password associated with the mysqltop
+user, specify a password with this option.
+<P></P>
+<DT><STRONG><A NAME="item_%2Dsl_%7Bseconds%7D%2C_%2D%2Dslow%3D%7Bseconds%7D">-sl {seconds}, --slow={seconds}</A></STRONG><BR>
+<DD>
+The number of seconds before a slow query is killed.  The default is
+180 seconds.
+<P></P></DL>
+<P>
+<HR>
+<H1><A NAME="filter options">FILTER OPTIONS</A></H1>
+<DL>
+<DT><STRONG><A NAME="item_%2Du_%7Buser%7D%2C_%2D%2Duser%3D%7Buser%7D">-u {user}, --user={user}</A></STRONG><BR>
+<DD>
+Kill only threads owned by this user.
+<P></P>
+<DT><STRONG><A NAME="item_%2Dfu_%7Bregex_pattern%7D%2C_%2D%2Dfilter%2Duser%3">-fu {regex_pattern}, --filter-user={regex_pattern}</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%2Dfh_%7Bregex_pattern%7D%2C_%2D%2Dfilter%2Dhost%3">-fh {regex_pattern}, --filter-host={regex_pattern}</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%2Dfd_%7Bregex_pattern%7D%2C_%2D%2Dfilter%2Ddb%3D%">-fd {regex_pattern}, --filter-db={regex_pattern}</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%2Dfs_%7Bregex_pattern%7D%2C_%2D%2Dfilter%2Dstate%">-fs {regex_pattern}, --filter-state={regex_pattern}</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%2Dfc_%7Bregex_pattern%7D%2C_%2D%2Dfilter%2Dcomman">-fc {regex_pattern}, --filter-command={regex_pattern}</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%2Dfi_%7Bregex_pattern%7D%2C_%2D%2Dfilter%2Dinfo%3">-fi {regex_pattern}, --filter-info={regex_pattern}</A></STRONG><BR>
+<DD>
+Filter the queries based on the <STRONG>regex_pattern</STRONG> provided.  The <STRONG>regex_pattern</STRONG> is a perl
+regular expression.  The regular expression match is done with case insensitivity.
+<P>For example, to only kill <STRONG>select</STRONG> statements on the <STRONG>user</STRONG> table, use the following:</P>
+<PRE>
+    --filter-info='select from user'</PRE>
+<P>or, to be more forgiving for mutil-table joins and extra spaces, use:</P>
+<PRE>
+    --filter-info='select\s+from\s+.*\buser\b.*where'</PRE>
+<P>Be careful to escape any special shell characters in the regex.</P>
+<P></P></DL>
+<P>All options can be stored in initialization files.  Command line options override
+options stored in the initialization file(s).  The following files are checked for
+arguments: current direcotry .mkillc, home directory .mkillc, /usr/local/etc/mkillc, 
+/etc/mkillc.  Options in the former files override options in the later files.</P>
+<P>The format of the initialization file is one option per line.  Options are specified just
+as they would be on the command line.  They can be abbreviated and use the one or two hyphen
+syntax.  Comments and blank lines are ignored.  The following is an exmple .mkillc file 
+which kills any 'select' statements from 'user1' which last more than 120 seconds.</P>
+<PRE>
+    #  Only kill 'user1' 'select' queries &gt; 120 seconds
+    -fu user1
+    -filter-info='select'
+    --slow=1   # refresh every one seconds</PRE>
+<P>
+<HR>
+<H1><A NAME="setup">SETUP</A></H1>
+<P>The most convenient way to setup your system to use <STRONG>mkill</STRONG> is to create a database user
+called <STRONG>mysqlkill</STRONG> which has no password.  For security purposes, this user should have 
+all privileges set to <STRONG>N</STRONG> except <STRONG>Process_priv</STRONG> which must be set to <STRONG>Y</STRONG>.</P>
+<P>To grant these privileges, execute the following from the MySQL command prompt</P>
+<P>For mysql 4.0.2 and greater:</P>
+<PRE>
+    mysql&gt; grant super,process on *.* to mysqlkill;
+    mysql&gt; grant super,process on *.* to mysqlkill@localhost;
+    mysql&gt; flush privileges;</PRE>
+<P>For mysql 3.x and 4.0.1:</P>
+<PRE>
+    mysql&gt; grant process on *.* to mysqlkill;
+    mysql&gt; grant process on *.* to mysqlkill@localhost;
+    mysql&gt; flush privileges;</PRE>
+<P>Notes:</P>
+<DL>
+<DT><DD>
+GRANT only works in MySQL 3.22.11 or later, for earlier versions add the user
+manually and fix the permissions as noted above.
+<P></P>
+<DT><DD>
+The GRANT to mysqltop and mysqltop@localhost may be modified depending upon which 
+hosts you want to grant access from.  In general, you probably want to limit it to 
+the hosts in your domain.
+<P></P></DL>
+<P>Initially, <STRONG>mkill</STRONG> does not connect to a specific database.  Most commands this 
+program issues are non-database specific (SHOW FULL PROCESSLIST, SHOW VARIABLES, 
+KILL id).  However, when database-specific commands are needed, <STRONG>mkill</STRONG> will try to 
+connect to the the required database and prompt for a username/password if the default one fails.</P>
+<P>To install mkill, run the following shell commands:</P>
+<PRE>
+    perl Makefile.PL
+    make
+    make install</PRE>
+<P>The default {install_prefix} is /usr/local which means that mkill is installed 
+in /usr/local/bin/.  To change this, run:</P>
+<PRE>
+    perl Makefile.PL --prefix={install_prefix}
+</PRE>
+<PRE>
+
+or modify the PREFIX line in Makefile.PL.</PRE>
+<P>Requires the following perl modules:</P>
+<PRE>
+    Module        Available At
+    ------------  --------------------------------------------------------
+    DBI           Distributed as Bundle::DBI: <A HREF="http://www.cpan.org/authors/id/TIMB">http://www.cpan.org/authors/id/TIMB</A>
+    DBD::mysql    <A HREF="http://www.cpan.org/authors/id/JWIED">http://www.cpan.org/authors/id/JWIED</A>
+    Getopt::Long  (Distributed with Perl 5)
+    Net::Domain   Part of libnet: <A HREF="http://www.cpan.org/authors/id/GBARR/">http://www.cpan.org/authors/id/GBARR/</A></PRE>
+<P>
+<HR>
+<H1><A NAME="author">AUTHOR</A></H1>
+<P>Marc Prewitt, Chelsea Networks &lt;<A HREF="mailto:mprewitt@chelsea.net">mprewitt@chelsea.net</A>&gt;</P>
+<P>Copyright (C) 2003 Marc Prewitt/Chelsea Networks, under the GNU GPL.
+mkill comes with ABSOLUTELY NO WARRANTY. This is free software, and you are
+welcome to redistribute it under certain conditions; see the COPYING file 
+for details.</P>
+<P>
+<HR>
+<H1><A NAME="known bugs">KNOWN BUGS</A></H1>
+<PRE>
+    $Id: mkill.PL,v 1.6 2004/09/12 21:19:12 mdprewitt Exp $</PRE>
+<P>The get char routines used to quit the program currently require the user
+to hit the RETURN key on the keyboard after entry.  This will soon be
+fixed.</P>
+
+</BODY>
+
+</HTML>

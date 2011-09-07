@@ -1,0 +1,56 @@
+To release a new version, do the following:
+
+-) Update the version in Makefile.PL
+
+-) Generate ChangeLog and checkin: cvs log -r{prev-ver}:
+
+-) cvs tag {ver}
+
+-) pod2html mtop > mtop.html
+
+-) pod2html mkill > mkill.html
+
+-) Copy mtop.html/mkill.html to the htdocs tree
+
+-) make dist
+
+-) Generate rpms.
+
+-) Add new release info to index.html
+
+-) FTP mtop-{ver}.gz to ftp://upload.sourceforge.net/incoming
+
+-) Create new release in SF
+
+-) Checkin html directory changes and update home direcoty on SF.
+
+-) Update the version in Makefile.PL to {next-ver}.rc1 and checkin
+
+-) Add release on freshmeat.
+
+-) Upload to cpan
+
+-) Send announcement to mysql-announce
+
+--------------------------------------------------------------------------
+
+mtop - Shows the MySQL commands consuming the greatest time
+Copyright (C) 2002 Marc Prewitt/Chelsea Networks <mprewitt@chelsea.net>
+
+This file is part of mtop.
+
+mtop is free software; you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software
+Foundation; either version 2 of the License, or (at your option) any later
+version.
+
+mtop is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+$Id: README.devel,v 1.4 2004/09/12 15:33:40 mdprewitt Exp $

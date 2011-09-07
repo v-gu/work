@@ -1,0 +1,360 @@
+<HTML>
+<HEAD>
+<TITLE>B<mtop> - Shows top mysql threads</TITLE>
+<LINK REV="made" HREF="mailto:systems@chelsea.net">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#options">OPTIONS</A></LI>
+	<LI><A HREF="#setup">SETUP</A></LI>
+	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#known bugs">KNOWN BUGS</A></LI>
+	<LI><A HREF="#todo">TODO</A></LI>
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P><STRONG>mtop</STRONG> - Shows top mysql threads</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+    mtop [--host={mysql_host}] [--dbuser={mysql_user}] 
+        [--password={mysqluser_pw}] [--seconds={refresh}] [--[no]idle] 
+        [--filter-user={regex}] [--filter-host={regex}] [--filter-db={regex}]
+        [--filter-command={regex}] [--filter-state={regex}] [--filter-info={{regex}}]
+        [--fold-select-columns]
+        [--user={user}] [--manualrefresh] [--slow={seconds}] [--vs|veryslow={seconds}]
+        [--vvs|veryveryslow={seconds}]</PRE>
+<PRE>
+    mtop --help</PRE>
+<PRE>
+    mtop --version</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P>Shows the MySQL commands consuming the greatest time.  By default, only non-sleeping 
+threads are shown, the <STRONG>--idle</STRONG> option shows idle threads.  While running several 
+keys will affect the operation of <STRONG>mtop</STRONG>.  Hitting <STRONG>h</STRONG> or <STRONG>?</STRONG> will show the 
+available options.</P>
+<P>Normally, run as a console program this will allow you to see errant or badly 
+optimized queries as they will stay on the screen for a while.  However, if you
+are hunting for short lived queries, running in the <STRONG>manualrefresh</STRONG> mode with a 
+short refresh time will allow you to catch short lived queries as well.</P>
+<P>The following keys are active while <STRONG>mtop</STRONG> is running:</P>
+<PRE>
+    q - quit
+    ? - help</PRE>
+<PRE>
+    Filtering/display</PRE>
+<PRE>
+    s - change the number of seconds to delay between updates
+    m - toggle manual refresh mode on/off
+    d - filter display with regular expression (user/host/db/command/state/info)
+    F - fold/unfold column names in select statement display
+    h - display process for only one host
+    u - display process for only one user
+    i - toggle all/non-Sleeping process display
+    o - reverse the sort order</PRE>
+<PRE>
+    Control/Detail</PRE>
+<PRE>
+    k - kill processes; send a kill to a list of ids
+    e - explain a process; show query optimizer info
+    z - zoom in on a process; show sql statement detail 
+    f - flush stats (reset show status variables)
+    t - show mysqld stats (show status/mysqladmin ext)
+    T - show short/important status
+    v - show mysqld variables (show variables/mysqladmin vars)
+    r - show replication status for master/slaves</PRE>
+<P><STRONG>Main Screen</STRONG></P>
+<P>The main query screen shows the following information as well as the currently
+active queries (explanations are from the MySQL online manual and 
+references refer to the section in the manual where the explanation came from):</P>
+<DL>
+<DT><STRONG><A NAME="item_n_Threads%3A_running%2C_cached">n Threads: running, cached</A></STRONG><BR>
+<DD>
+The <STRONG>n</STRONG> Threads represents how many threads the mysqld has allocated.  One
+thread is allocated for each user connection.  Additional threads are allocated
+for replication.
+<P></P>
+<DT><STRONG><A NAME="item_Queries%2Fslow%3A_Total_queries_%2F_Total_SLOW_QUE">Queries/slow: Total queries / Total SLOW QUERIES</A></STRONG><BR>
+<DD>
+The first number is the total number of queries sent to the server
+since the last 'flush status' or since server start.  The second
+number is the number of queries that have taken more than 
+long_query_time. See section 4.9.5 The Slow Query Log.
+<P></P>
+<DT><STRONG><A NAME="item_Cache_Hit%3A_Cache_hit_ratio">Cache Hit: Cache hit ratio</A></STRONG><BR>
+<DD>
+This is the percentage of times a key read is handled from the 
+key buffer cache.  See section 4.5.7.4 <STRONG>SHOW VARIABLES</STRONG> of 
+the MySQL manual for more information.
+<P></P>
+<DT><STRONG><A NAME="item_Opened_tables%3A_tables_opened">Opened tables: tables opened</A></STRONG><BR>
+<DD>
+MySQL has a cache for open tables.  If 'opened tables' is high, your cache
+may be too small.  Look at the MySQL manual section: <STRONG>5.4.7 How MySQL Opens 
+and Closes Tables</STRONG> for further information.
+<P></P>
+<DT><STRONG><A NAME="item_RRN%3A_Handler_read_rnd_next">RRN: Handler_read_rnd_next</A></STRONG><BR>
+<DD>
+Number of requests to read the next row in the datafile. This will be 
+high if you are doing a lot of table scans. Generally this suggests 
+that your tables are not properly indexed or that your queries are 
+not written to take advantage of the indexes you have. (4.5.7.3)
+<P></P>
+<DT><STRONG><A NAME="item_TLW%3A_Table_locks_waited">TLW: Table_locks_waited</A></STRONG><BR>
+<DD>
+Number of times a table lock could not be acquired immediately and a 
+wait was needed. If this is high, and you have performance problems, 
+you should first optimise your queries, and then either split your 
+<CODE>table(s)</CODE> or use replication. Available after 3.23.33.  (4.5.7.3)
+<P></P>
+<DT><STRONG><A NAME="item_SFJ%3A_Select_full_join">SFJ: Select_full_join</A></STRONG><BR>
+<DD>
+Number of joins without keys (If this is not 0, you should carefully 
+check the indexes of your tables). (4.5.7.3)
+<P></P>
+<DT><STRONG><A NAME="item_SMP%3A_Sort_merge_passes">SMP: Sort_merge_passes</A></STRONG><BR>
+<DD>
+Number of merges passes the sort algoritm have had to do. If this value 
+is large you should consider increasing sort_buffer. (4.5.7.3)
+<P></P>
+<DT><STRONG><A NAME="item_QPS%3A_Questions_per_second">QPS: Questions per second</A></STRONG><BR>
+<DD>
+The total number of sql commands handled by the MySQL server since startup
+or the last <STRONG>flush status</STRONG> command.
+<P></P></DL>
+<P><STRONG>Statistics/Variables</STRONG></P>
+<P>When viewing the <EM>stats</EM> screen (<STRONG>t</STRONG>), the screen will refresh until a key is 
+pressed at which point you will return to the main screen.  The bottom of the 
+<EM>stats</EM> screen is denoted with a line containing <STRONG>---</STRONG>.  If you do not see
+that line, resize your screen until you do.</P>
+<P>The statistics screen has the following format:</P>
+<PRE>
+    Stat:      total [avg per sec / instant per sec ]</PRE>
+<P>For example:</P>
+<PRE>
+    Questions:     720,672 [30/12]</PRE>
+<P>The <EM>short/important</EM> status screen is a list of recommendations from the
+MySQL manual.</P>
+<P>The first number is the total since startup or the last 'flush status'. 
+The second number is the number per second since startup or flush.  The
+last is the number per second since the last screen refresh.</P>
+<P>The <EM>variables</EM> screen only shows the information once and returns to the main 
+screen as the variables do not change after server startup.</P>
+<P><STRONG>Replication</STRONG></P>
+<P>The replication monitor screen looks for a master or slave server running on the currently
+monitored mysqld.  If a master server is found, it then tries to connect to each slave
+connected to the master.  Replication is shown for all masters and slaves found.
+Offsets from the master for each of the slaves is shown.  Note: the offset may be less
+than zero because the slave position is checked after the master position.  The offset
+shown is the number of queries in the binlog that the slave has to process before
+being caught up with the master.</P>
+<P>
+<HR>
+<H1><A NAME="options">OPTIONS</A></H1>
+<P>All options can be abbreviated by their shortest unique abbreviation.</P>
+<DL>
+<DT><STRONG><A NAME="item_%2D%3F%2C_%2D%2Dhelp">-?, --help</A></STRONG><BR>
+<DD>
+Show the help screen and exit.
+<P></P>
+<DT><STRONG><A NAME="item_%2Dv%2C_%2D%2Dversion">-v, --version</A></STRONG><BR>
+<DD>
+Show the version number and exit.
+<P></P>
+<DT><STRONG><A NAME="item_%2Dh_%7Bmysql_host%7D%2C_%2D%2Dhost%3D%7Bmysql_hos">-h {mysql_host}, --host={mysql_host}</A></STRONG><BR>
+<DD>
+By default, the mysqld on localhost is monitored.  Specify an alternate host
+with this option.
+<P></P>
+<DT><STRONG><A NAME="item_%2Ddbu_%7Bmysql_user%7D%2C_%2D%2Ddbuser%3D%7Bmysql">-dbu {mysql_user}, --dbuser={mysql_user}</A></STRONG><BR>
+<DD>
+By default, the user 'mysqltop' is used to connect to the database.  Specify an alternate user with this option.
+<P></P>
+<DT><STRONG><A NAME="item_%2Dp_%7Bmysqluser_pw%7D%2C_%2D%2Dpassword%3D%7Bmys">-p {mysqluser_pw}, --password={mysqluser_pw}</A></STRONG><BR>
+<DD>
+By default, there is no password associated with the mysqltop
+user, specify a password with this option.
+<P></P>
+<DT><STRONG><A NAME="item_%2Dse_%7Brefresh%7D%2C_%2D%2Dseconds%3D%7Brefresh%">-se {refresh}, --seconds={refresh}</A></STRONG><BR>
+<DD>
+The default screen refresh is 5 seconds.
+<P></P>
+<DT><STRONG><A NAME="item_%2Dsl_%7Bseconds%7D%2C_%2D%2Dslow%3D%7Bseconds%7D">-sl {seconds}, --slow={seconds}</A></STRONG><BR>
+<DD>
+The number of seconds before a slow query is highlighted.  The default is
+the server's long_query configuration variable.
+<P></P>
+<DT><STRONG><A NAME="item_%2Dvs_%7Bseconds%7D%2C_%2D%2Dveryslow%3D%7Bseconds">-vs {seconds}, --veryslow={seconds}</A></STRONG><BR>
+<DD>
+The number of seconds before a very slow query is highlighted.  The default is
+the the --slow option * 2.
+<P></P>
+<DT><STRONG><A NAME="item_%2Dvvs_%7Bseconds%7D%2C_%2D%2Dveryveryslow%3D%7Bse">-vvs {seconds}, --veryveryslow={seconds}</A></STRONG><BR>
+<DD>
+The number of seconds before a very very slow query is highlighted.  The default is
+the the --slow option * 4.
+<P></P>
+<DT><STRONG><A NAME="item_%2Di%2C_%2D%2D%5Bno%5Didle">-i, --[no]idle</A></STRONG><BR>
+<DD>
+By default, processes in the <STRONG>Sleep</STRONG> command state are not shown.  This option turns
+on display of idle threads.
+<P></P>
+<DT><STRONG><A NAME="item_%2Du_%7Buser%7D%2C_%2D%2Duser%3D%7Buser%7D">-u {user}, --user={user}</A></STRONG><BR>
+<DD>
+Show only threads owned by this user.
+<P></P>
+<DT><STRONG><A NAME="item_%2Dfu_%7Bregex_pattern%7D%2C_%2D%2Dfilter%2Duser%3">-fu {regex_pattern}, --filter-user={regex_pattern}</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%2Dfh_%7Bregex_pattern%7D%2C_%2D%2Dfilter%2Dhost%3">-fh {regex_pattern}, --filter-host={regex_pattern}</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%2Dfd_%7Bregex_pattern%7D%2C_%2D%2Dfilter%2Ddb%3D%">-fd {regex_pattern}, --filter-db={regex_pattern}</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%2Dfs_%7Bregex_pattern%7D%2C_%2D%2Dfilter%2Dstate%">-fs {regex_pattern}, --filter-state={regex_pattern}</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%2Dfc_%7Bregex_pattern%7D%2C_%2D%2Dfilter%2Dcomman">-fc {regex_pattern}, --filter-command={regex_pattern}</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%2Dfi_%7Bregex_pattern%7D%2C_%2D%2Dfilter%2Dinfo%3">-fi {regex_pattern}, --filter-info={regex_pattern}</A></STRONG><BR>
+<DD>
+Filter the display based on the <STRONG>regex_pattern</STRONG> provided.  The <STRONG>regex_pattern</STRONG> is a perl
+regular expression.  The regular expression match is done with case insensitivity.
+<P>For example, to only show <STRONG>select</STRONG> statements on the <STRONG>user</STRONG> table, use the following:</P>
+<PRE>
+    --filter-info='select from user'</PRE>
+<P>or, to be more forgiving for mutil-table joins and extra spaces, use:</P>
+<PRE>
+    --filter-info='select\s+from\s+.*\buser\b.*where'</PRE>
+<P>These same regular expression filters can be used with the interactive <STRONG>d</STRONG> command.
+Be careful to escape any special shell characters in the regex.</P>
+<P></P>
+<DT><STRONG><A NAME="item_%2Dm%2C_%2D%2Dmanualrefresh">-m, --manualrefresh</A></STRONG><BR>
+<DD>
+In this mode, the screen only refreshes when the user hits a key on the
+keyboard.  The screen will refresh automatically until a query is seen and then wait for 
+further input.  An uppercase M will appear in the top right hand corner of the screen to 
+indicate that you are in this mode.
+<P></P></DL>
+<P>All options can be stored in initialization files.  Command line options override
+options stored in the initialization file(s).  The following files are checked for
+arguments: current direcotry .mtoprc, home directory .mtoprc, /usr/local/etc/mtoprc, 
+/etc/mtoprc.  Options in the former files override options in the later files.</P>
+<P>The format of the initialization file is one option per line.  Options are specified just
+as they would be on the command line.  They can be abbreviated and use the one or two hyphen
+syntax.  Comments and blank lines are ignored.  The following is an exmple .mtoprc file 
+which sets a user filter to user1 and sets the refresh rate to one second:</P>
+<PRE>
+    #  Only look at 'user1'
+    -fu user1
+    --seconds=1   # refresh every one seconds</PRE>
+<P>
+<HR>
+<H1><A NAME="setup">SETUP</A></H1>
+<P>The most convenient way to setup your system to use <STRONG>mtop</STRONG> is to create a database user
+called <STRONG>mysqltop</STRONG> which has no password.  For security purposes, this user should have 
+all privileges set to <STRONG>N</STRONG> except <STRONG>Process_priv</STRONG> which must be set to <STRONG>Y</STRONG>.</P>
+<P>To grant these privileges, execute the following from the MySQL command prompt</P>
+<P>For mysql 4.0.2 and greater:</P>
+<PRE>
+    mysql&gt; grant super, reload, process on *.* to mysqltop;
+    mysql&gt; grant super, reload, process on *.* to mysqltop@localhost;
+    mysql&gt; flush privileges;</PRE>
+<P>For mysql 3.x and 4.0.1:</P>
+<PRE>
+    mysql&gt; grant reload, process on *.* to mysqltop;
+    mysql&gt; grant reload, process on *.* to mysqltop@localhost;
+    mysql&gt; flush privileges;</PRE>
+<P>Notes:</P>
+<DL>
+<DT><DD>
+GRANT only works in MySQL 3.22.11 or later, for earlier versions add the user
+manually and fix the permissions as noted above.
+<P></P>
+<DT><DD>
+The GRANT to mysqltop and mysqltop@localhost may be modified depending upon which 
+hosts you want to grant access from.  In general, you probably want to limit it to 
+the hosts in your domain.
+<P></P>
+<DT><DD>
+The <STRONG>reload</STRONG> privilege is not required for <STRONG>mtop</STRONG> to do basic monitoring.  It is 
+only needed if you wish to issue <STRONG>flush</STRONG> commands from <STRONG>mtop</STRONG>.  The <STRONG>super</STRONG>
+privilege is needed if you wish to kill queries in mysql 4.0.2 versions and
+above.  In 3.x, the <STRONG>process</STRONG> privilege allows a user to terminate a query.
+<P></P></DL>
+<P>Initially, <STRONG>mtop</STRONG> does not connect to a specific database.  Most commands this 
+program issues are non-database specific (SHOW FULL PROCESSLIST, SHOW VARIABLES, 
+KILL id).  However, when database-specific commands are needed, <STRONG>mtop</STRONG> will try to 
+connect to the the required database and prompt for a username/password if the default one fails.</P>
+<P>To install <STRONG>mtop</STRONG>, run the following shell commands:</P>
+<PRE>
+    perl Makefile.PL
+    make
+    make install</PRE>
+<P>The default {install_prefix} is /usr/local which means that <STRONG>mtop</STRONG> is installed 
+in /usr/local/bin/.  To change this, run:</P>
+<PRE>
+    perl Makefile.PL --prefix={install_prefix}
+</PRE>
+<PRE>
+
+or modify the PREFIX line in Makefile.PL.</PRE>
+<P>Requires the following perl modules:</P>
+<PRE>
+    Module        Available At
+    ------------  --------------------------------------------------------
+    Curses        <A HREF="http://www.cpan.org/authors/id/WPS">http://www.cpan.org/authors/id/WPS</A>
+    DBI           Distributed as Bundle::DBI: <A HREF="http://www.cpan.org/authors/id/TIMB">http://www.cpan.org/authors/id/TIMB</A>
+    DBD::mysql    <A HREF="http://www.cpan.org/authors/id/JWIED">http://www.cpan.org/authors/id/JWIED</A>
+    Getopt::Long  (Distributed with Perl 5)
+    Net::Domain   Part of libnet: <A HREF="http://www.cpan.org/authors/id/GBARR/">http://www.cpan.org/authors/id/GBARR/</A></PRE>
+<P>
+<HR>
+<H1><A NAME="author">AUTHOR</A></H1>
+<P>Marc Prewitt, Chelsea Networks &lt;<A HREF="mailto:mprewitt@chelsea.net">mprewitt@chelsea.net</A>&gt;</P>
+<P>Copyright (C) 2002 Marc Prewitt/Chelsea Networks, under the GNU GPL.
+mtop comes with ABSOLUTELY NO WARRANTY. This is free software, and you are
+welcome to redistribute it under certain conditions; see the COPYING file 
+for details.</P>
+<P>
+<HR>
+<H1><A NAME="known bugs">KNOWN BUGS</A></H1>
+<P>The cache hit ratio may look very low if your server receives more than 
+4 billion key_read_requests.  This is due to a roll-over condition.  If that
+number exceeds 4 billion and change, it rolls over to 1.  The cache 
+hit ratio is calculated as: 100 - (key_reads/key_read_requests) * 100.</P>
+<P>If you are really trying to focus on the cache hit ratio, flush the status
+variables with the <STRONG>mtop</STRONG> <STRONG>f</STRONG> command to reset both the key_reads and
+key_read_requests.</P>
+<P>Win2K telnet.exe - If you are using the Windows 2000 telnet program, it defaults
+to ansi mode which doesn't work well with curses (in my testing on Solaris 8).  
+To work around this, set the terminal type to vt100.  To do this, issue the
+following command from the telnet prompt before connecting to a host:</P>
+<PRE>
+    set term vt100</PRE>
+<P>Alternatively, you can manually set your TERM environment variable to vt100
+after you are logged in.</P>
+<P>
+<HR>
+<H1><A NAME="todo">TODO</A></H1>
+<P>Offer sorts by other columns</P>
+<P>For the 'More:' paging, it would be nice to support 'Less' behaviour.</P>
+<P>Add 'n' command and properly calculate number of lines on screen.</P>
+<PRE>
+    $Id: mtop.PL,v 1.61 2004/09/12 22:22:03 mdprewitt Exp $</PRE>
+
+</BODY>
+
+</HTML>

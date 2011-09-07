@@ -1,0 +1,218 @@
+Release v0-6-6
+==============
+
+mkill was missing from the 0.6.5 distribution.  
+
+mtop
+----
+
+New feature to 'fold' select columns in main display so you 
+can see more of the WHERE clause.  Use the F key to fold or
+the --fold option from the command line.
+
+Release v0-6-5
+==============
+
+mtop/mkill
+----------
+
+No longer need to be able to connect to the 'test' database for
+startup.  Thanks to Thorsten Zachmann for pointing this out.
+
+
+Release v0-6-4
+==============
+
+mtop
+----
+New options to control how many seconds elapse before a slow query is
+highlighted.
+
+mkill
+----
+Watch and kill long running queries.
+
+Release v0-6-3
+==============
+
+mtop
+----
+
+Fixed negative slave offsets.  Just show 0.  Since the slave position
+is checked after the master position, it might be a bit ahead.
+
+Fixed slave offsets where the master and slave are on different
+logfiles.  Instead of showing a wierd number, show '> master position'
+since we know that we're at least that far behind plus any other
+intervening log files.
+
+Fixed Mac OSX curses bugs.
+
+New Features:
+
+ - Added ability to save options in a .mtoprc configuration file.
+
+ - Added sysadmin recommendation page ('T').
+
+ - Added queries/second to main header.
+
+ - Added per second info to stats screen.
+
+Added documentation for new features.  Expanded documentation on the
+header section.
+
+Release v0-6-2
+==============
+
+mtop
+----
+
+In main monitor window, strip out comments so we can see the actual
+query.  Comments will still appear in the zoom/explain views.
+Also removed leading spaces from display columns.
+
+Release v0-6-1
+==============
+
+mtop
+----
+
+Added replication status page (screen command 'r').  This page updates
+similar to the main screen.  Three types of replication status are
+shown on this page: 1) master servers running on this machine, 2) slave
+servers running on this machine, 3) slave servers attached to this 
+master.
+
+Changed debugging from a flag to a level.  Moved dbh connection 
+into function which caches the dbh's.
+
+Release v0-5-1
+==============
+
+mtop
+----
+
+Added new vars and stats screens.  The stats screen updates until a key
+is pressed.  The vars screen shows the page and returns to the main screen.
+
+Moved some of the common key handling routines into functions.
+
+Reduced the amount of space statistics numbers take by only showing
+2-4 significant digits.
+
+Added mysqld memory usage for localhost in main header.  Currently uses 
+/proc fs and only works for root or mysql user because either the pidfile 
+may not have permissive permissions or the proc directory may not.
+
+Release v0-4-1
+==============
+
+Makefile.PL
+-----------
+
+revision 1.8
+date: 2002/02/18 05:04:53;  author: mdprewitt;
+Ensure that PREFIX is used for install location instead of
+SITEPREFIX.
+
+revision 1.7
+date: 2002/02/03 15:50:28;  author: mdprewitt;
+Added AUTHOR/ABSTRACT definitions.  Added define to be able to track
+Makefile.PL's version number in the generated Makefile.
+
+mtop
+----
+
+revision 1.38
+date: 2002/02/03 05:10:24;  author: mdprewitt;
+Added documentation for the filter commands.
+Uncombined the --filter-user command from the --user command.
+--user looks for an equality, the filter command uses a regex.
+
+revision 1.37
+date: 2002/02/02 15:37:08;  author: mdprewitt;  
+Added options to filter with regex by host/db/command/state/info
+
+revision 1.36
+date: 2002/01/27 17:07:53;  author: mdprewitt;  
+Added info about broken ansi mode in win2k telnet.
+
+revision 1.35
+date: 2002/01/24 13:45:56;  author: mdprewitt;  
+Fixed explanation of cache hit on help page.  It was showing the incorrect
+variable name.
+
+revision 1.34
+date: 2002/01/24 03:49:13;  author: mdprewitt;  
+Added documentation on how to grant permissions to the mysqltop user.
+
+Release v0-3-1
+==============
+
+mtop
+----
+
+revision 1.33
+date: 2002/01/16 22:26:25;  author: mdprewitt;  
+Experimental feature to restrict by host.  The feature will remain but
+the implementation may change.  Currently, the host in the process list
+is a fqdn but shown as a name without the domain.  The current
+implementation prompts for the name assuming it's a short name and checks
+to see if the processlist host starts with the user entered host.
+
+revision 1.32
+date: 2002/01/15 12:59:56;  author: mdprewitt; 
+Removed setpriority since it was degrading interactive performance and not
+helping much.  Since mtop is mainly sleeping for keyboard activity, it
+doesn't take too much cpu time.
+
+Added a banner at the end of the process list to show the end of the
+list.
+
+Release v0-2-1
+==============
+
+mtop
+----
+
+Added --help option.
+
+Added --version to only show version info.
+
+Added --manualrefresh/interactive keyboard 'm' to prompt for screen refresh.
+
+Override CORE::die to stop curses if it's running so that fatal error messages
+can be seen.
+
+Fixed header uptime display.
+
+Screen refresh wasn't refreshing.  Added initial screen refresh and
+refresh even if getch returns ERR which it seems to be doing if no
+char is waiting in the buffer.
+
+Thanks to Johan Ekenberg for the uptime patch, for noticing the
+refresh problem and suggesting the --manualrefresh option.
+
+Added q to 'more'
+
+Added flush command
+
+Fixed message clearing in between messages
+
+Fixed errmsg (should be errstr)
+
+Protect process display from newlines and squeeze multiple spaces.
+
+Changed to get version number from make process.
+
+Cleaned up screen before exiting.
+
+Makefile.PL
+-----------
+
+Added --prefix option to allow relocation of binary without modifying
+the distribution.
+
+Changed default install prefix location to /usr/local/ (mtop will
+install in /usr/local/bin).
+
