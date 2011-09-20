@@ -6,9 +6,6 @@
 *.exe
 *.o
 *.so
-## golang compiled files
-*.8
-*.6
 
 # Packages #
 ############

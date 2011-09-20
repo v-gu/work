@@ -17,6 +17,7 @@ const (
 
 var (
 	DRYRUN_MODE = true
+	VERBOSE_MODE = false
 )
 
 
@@ -34,8 +35,8 @@ func newDBConn() *mysql.Client {
 /*
  Query1, DML(INSERT) on role_info.
  */
-func query1(cli *mysql.Client) {
-	query_name := "[query1]"
+func queryRoleInfo1(cli *mysql.Client) {
+	query_name := "[RoleInfo.query1]"
 	loop_count := 1000
 	type row struct {
 		// PK: (userid, roleid, server, date)
@@ -45,12 +46,7 @@ func query1(cli *mysql.Client) {
 		date		string
 		name		string
 	}
-	if !DRYRUN_MODE {
-		fmt.Printf("%s started...\n", query_name)
-	} else {
-		fmt.Printf("%s will be started with following statements:\n",
-			query_name)
-	}
+	fmt.Printf("%s started...\n", query_name)
 	starttime := time.Nanoseconds()
 	for i := 0; i < loop_count; i++ {
 		newrow := &row{}
@@ -59,6 +55,20 @@ func query1(cli *mysql.Client) {
 		newrow.server = int8(rand.Intn(100))
 		newrow.date = "2011-06-26 10:20:24"
 		newrow.name = "testname"
+		if VERBOSE_MODE {
+			fmt.Printf("%s INSERT IGNORE INTO role_info " +
+				"VALUES(%d, %d, %d, %q, %q)\n",
+				query_name, newrow.userid, newrow.roleid, newrow.server,
+				newrow.date, newrow.name)
+		} else {
+			if i == 0 {
+				fmt.Printf("%s INSERT IGNORE INTO role_info " +
+					"VALUES(%d, %d, %d, %q, %q)\n",
+					query_name, newrow.userid, newrow.roleid, newrow.server,
+					newrow.date, newrow.name)
+				fmt.Printf("%s ...(%d lines)\n", query_name, loop_count - 1)
+			}
+		}
 		if !DRYRUN_MODE {
 			cli.Start()
 			stmt, err := cli.Prepare("INSERT IGNORE INTO role_info " +
@@ -79,10 +89,6 @@ func query1(cli *mysql.Client) {
 				os.Exit(1)
 			}
 			cli.Rollback()
-		} else {
-			fmt.Printf("INSERT IGNORE INTO role_info VALUES(%s,%s,%s,%s,%s)\n",
-				newrow.userid, newrow.roleid, newrow.server, newrow.date,
-				newrow.name)
 		}
 	}
 	endtime := time.Nanoseconds()
@@ -97,18 +103,24 @@ func query1(cli *mysql.Client) {
 /*
  Query2, DML(UPDATE) on role_info.
  */
-func query2(cli *mysql.Client) {
-	query_name := "[query2]"
+func queryRoleInfo2(cli *mysql.Client) {
+	query_name := "[RoleInfo.query2]"
 	loop_count := 10
-
-	if !DRYRUN_MODE {
-		fmt.Printf("%s started...\n", query_name)
-	} else {
-		fmt.Printf("%s will be started with following statements:\n",
-			query_name)
-	}
+	fmt.Printf("%s started...\n", query_name)
 	starttime := time.Nanoseconds()
 	for i := 0; i < loop_count; i++ {
+		if VERBOSE_MODE {
+			fmt.Printf("%s UPDATE role_info SET NAME = %s " +
+				"WHERE name IS NULL\n",
+				query_name, "'testname'")
+		} else {
+			if i == 0 {
+				fmt.Printf("%s UPDATE role_info SET NAME = %s " +
+					"WHERE name IS NULL\n",
+					query_name, "'testname'")
+				fmt.Printf("%s ...(%d lines)\n", query_name, loop_count - 1)
+			}
+		}
 		if !DRYRUN_MODE {
 			cli.Start()
 			stmt, err := cli.Prepare("UPDATE role_info SET NAME = ? " +
@@ -128,10 +140,7 @@ func query2(cli *mysql.Client) {
 				os.Exit(1)
 			}
 			cli.Rollback()
-		} else {
-			fmt.Printf("UPDATE role_info SET NAME = %s WHERE name IS NULL\n",
-				"'testname'")
-		}
+		} 
 	}
 	endtime := time.Nanoseconds()
 	if !DRYRUN_MODE {
@@ -146,15 +155,16 @@ func query2(cli *mysql.Client) {
 /*
  Query3, DML(DELETE) on role_info by server and roleid.
  */
-func query3(cli *mysql.Client) {
-	queryName := "[query3]"
+func queryRoleInfo3(cli *mysql.Client) {
+	queryName := "[RoleInfo.query3]"
 	roleCount := 1000
-	if !DRYRUN_MODE {
-		fmt.Printf("%s started...\n", queryName)
-	} else {
-		fmt.Printf("%s will be started with following statements:\n", queryName)
-	}
+	fmt.Printf("%s started...\n", queryName)
 	starttime := time.Nanoseconds()
+	// retrieve records base
+	if VERBOSE_MODE {
+		fmt.Printf("%s SELECT server, roleid FROM role_info LIMIT %d",
+			queryName, roleCount)
+	}
 	cli.Start()
 	stmt, err := cli.Prepare(
 		fmt.Sprintf("SELECT server, roleid FROM role_info LIMIT %d", roleCount))
@@ -172,14 +182,17 @@ func query3(cli *mysql.Client) {
 		fmt.Fprintln(os.Stderr, queryName + err.String())
 		return
 	}
-	fmt.Printf("records: %d\n", stmt.RowCount())
-	// retrieve and store names
+	fmt.Printf("%s got records seed: %d\n", queryName, stmt.RowCount())
+	// store records base
 	type role struct {
-		server string
-		roleid string
+		server int8
+		roleid int32
 	}
-	roles := make([]role, roleCount)
-	var server, roleid string
+	var (
+		roles = make([]role, 0, 1000)
+		server int8
+		roleid int32
+	)
 	err = stmt.BindResult(&server, &roleid)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, queryName + err.String())
@@ -192,36 +205,44 @@ func query3(cli *mysql.Client) {
 			continue
 		}
 		if eof { break }
-		fmt.Println(server)
 		role := &role{server, roleid}
 		roles = append(roles, *role)
 	}
 	stmt.FreeResult()
 	stmt.Reset()
-	if !DRYRUN_MODE {
-		for _, role := range roles {
-			stmt, err := stmt.Prepare("DELETE FROM role_info WHERE server=? " +
+	var i int = 0;
+	var rolesCount = len(roles)
+	for _, role := range roles {
+		if VERBOSE_MODE {
+			fmt.Printf("%s DELETE FROM role_info WHERE server=%d " +
+				"AND roleid=%d\n",
+				queryName, role.server, role.roleid)
+		} else {
+ 			if i == 0 {
+				fmt.Printf("%s DELETE FROM role_info WHERE server=%d AND " +
+					"roleid=%d\n",
+					queryName, role.server, role.roleid)
+				fmt.Printf("%s ...(%d lines)\n", queryName, rolesCount - 1)
+			}
+			i++
+		}
+		if !DRYRUN_MODE {
+			err := stmt.Prepare("DELETE FROM role_info WHERE server=? " +
 				"AND roleid=?")
 			if err != nil {
-				fmt.Fprintln(os.Stderr, query_name + err.String())
+				fmt.Fprintln(os.Stderr, queryName + err.String())
 				os.Exit(1)
 			}
 			err = stmt.BindParams(role.server, role.roleid)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, query_name + err.String())
+				fmt.Fprintln(os.Stderr, queryName + err.String())
 				os.Exit(1)
 			}
 			err = stmt.Execute()
 			if err != nil {
-				fmt.Fprintln(os.Stderr, query_name + err.String())
+				fmt.Fprintln(os.Stderr, queryName + err.String())
 				os.Exit(1)
 			}
-			
-		}
-	} else {
-		for _, role := range roles {
-			fmt.Printf("DELETE FROM role_info WHERE server=%s AND roleid=%s\n",
-				role.server, role.roleid)
 		}
 	}
 	endtime := time.Nanoseconds()
@@ -234,13 +255,82 @@ func query3(cli *mysql.Client) {
 }
 
 
+func queryRoleLogin1(cli *mysql.Client) {
+	queryName := "[RoleLogin.query1]"
+	loopCount := 1000
+	type row struct {
+		// PK: (date, server, roleid)
+		date		string
+		server		int8
+		roleid		int64
+		money		int32
+	}
+	fmt.Println(queryName, "started...")
+	startTime := time.Nanoseconds()
+	for i := 0; i < loopCount; i++ {
+		newRow := &row{}
+		newRow.date = fmt.Sprintf("2011-%02d-%02d %02d:%02d:%02d",
+			rand.Intn(12) + 1,	// month
+			rand.Intn(30) + 1,	// day
+			rand.Intn(24),		// hour
+			rand.Intn(60),		// minute
+			rand.Intn(60))		// second
+		newRow.server = int8 (rand.Intn(127))
+		newRow.roleid = rand.Int63()
+		newRow.money = rand.Int31()
+		if VERBOSE_MODE {
+			fmt.Printf("%s INSERT IGNORE INTO role_login VALUES(%s, %d, %d, %d)\n",
+				queryName, newRow.date, newRow.server, newRow.roleid, newRow.money)
+		} else {
+			if i == 0 {
+				fmt.Printf("%s INSERT IGNORE INTO role_login " +
+					"VALUES(%s, %d, %d, %d)\n",
+					queryName, newRow.date, newRow.server,
+					newRow.roleid, newRow.money)
+				fmt.Printf("%s ...(%d lines)\n",
+					queryName, loopCount - 1)
+			}
+		}
+		if !DRYRUN_MODE {
+			cli.Start()
+			stmt, err := cli.Prepare("INSERT IGNORE INTO role_login " +
+				"VALUES(?,?,?,?)")
+			if err != nil {
+				fmt.Fprintln(os.Stderr, queryName + err.String())
+				os.Exit(1)
+			}
+			err = stmt.BindParams(newRow.date, newRow.server, newRow.roleid,
+				newRow.money)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, queryName + err.String())
+				os.Exit(1)
+			}
+			err = stmt.Execute()
+			if err != nil {
+				fmt.Fprintln(os.Stderr, queryName + err.String())
+				os.Exit(1)
+			}
+			cli.Rollback()
+		}
+		endTime := time.Nanoseconds()
+		if !DRYRUN_MODE {
+			fmt.Printf("%s ended. Averange query time: %d nanosecs.\n", queryName,
+				(endTime-startTime)/((int64)(loopCount)))
+		} else {
+			fmt.Printf("%s ended.\n", queryName)
+		}
+	}
+}
+
+
 func main() {
 	fmt.Println("Test suite started...")
 
 	fmt.Println("indivisual test:")
-	// query1(newDBConn())
-	// query2(newDBConn())
-	query3(newDBConn())
+	// queryRoleInfo1(newDBConn())
+	// queryRoleInfo2(newDBConn())
+	// queryRoleInfo3(newDBConn())
+	queryRoleLogin1(newDBConn())
 	return
 	
 	queries := 2
