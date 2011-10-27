@@ -51,11 +51,9 @@ mysql18-eu \
 
 if [ ! -d "$PIDFILE_PREFIX" ];then
     mkdir -p "$PIDFILE_PREFIX"
-    chown mysql:mysql "$PIDFILE_PREFIX"
 fi
 if [ ! -d "$LOGFILE_PREFIX" ];then
     mkdir -p "$LOGFILE_PREFIX"
-    chown mysql:mysql "$LOGFILE_PREFIX"
 fi
 case "$1" in
     'start')
