@@ -67,10 +67,10 @@ case "$1" in
             if [ "$nid" == "$i" ];then
                                 nid="h=$i"
             fi
-            start-stop-daemon --start --pidfile="$pidfile" --exec="$EXE" \
-                --chdir=/tmp --chuid=mysql:mysql --background --oknodo -- \
+            start-stop-daemon --start --pidfile="$pidfile" --startas="$EXE" \
+                --chdir=/tmp --background --oknodo -- \
                 -pidfile="$pidfile" -m sysadmins@perfectworld.com \
-                -l="$log" -e="$stderr" "$nid"
+                -f="$log" -e="$stderr" "$nid"
         done
         ;;
     'stop')
@@ -78,8 +78,7 @@ case "$1" in
             pidfile="$PIDFILE_PREFIX/${i%%:*}.pid"
             errlog="$LOGFILE_PREFIX/${i%%:*}.errlog"
             stderr="$LOGFILE_PREFIX/${i%%:*}.stderr"
-            start-stop-daemon --stop --pidfile="$pidfile" --exec="$EXE" \
-                --user=mysql --group=mysql --oknodo
+            start-stop-daemon --stop --pidfile="$pidfile" --oknodo
         done
         ;;
     'status')
@@ -88,8 +87,7 @@ case "$1" in
             errlog="$LOGFILE_PREFIX/${i%%:*}.errlog"
             stderr="$LOGFILE_PREFIX/${i%%:*}.stderr"
             nid="${i#*:}"
-            start-stop-daemon --status --pidfile="$pidfile" --exec="$EXE" \
-                --user=mysql --group=mysql --oknodo
+            start-stop-daemon --status --pidfile="$pidfile" --oknodo
         done
         ;;
     *)
