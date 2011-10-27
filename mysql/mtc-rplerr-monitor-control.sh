@@ -63,9 +63,9 @@ case "$1" in
             stderr="$LOGFILE_PREFIX/${i%%:*}.stderr"
             nid="${i#*:}"
             if [ "$nid" == "$i" ];then
-                                nid="h=$i"
+                nid="h=$i"
             fi
-            start-stop-daemon --start --pidfile="$pidfile" --startas="$EXE" \
+            start-stop-daemon --start --pidfile="$pidfile" --exec="$EXE" \
                 --chdir=/tmp --background --oknodo -- \
                 -pidfile="$pidfile" -m sysadmins@perfectworld.com \
                 -f="$log" -e="$stderr" "$nid"
