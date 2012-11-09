@@ -86,9 +86,9 @@ fi
 for i in $SERVERS;do
     if [[ "$VERBOSE" == "true" ]];then
         echo ["$i"]:
-        eval "$sshcmd $i $@"
+        eval "$sshcmd $i \"$@\""
     else
-        eval "$sshcmd $i $@"
+        eval "$sshcmd $i \"$@\""
     fi
 done
 
